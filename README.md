@@ -103,57 +103,6 @@ npm install
 npm run dev
 ```
 
-## 🎯 Key Features in Detail
-
-### 1. Instagram-like Feed System
-- Dynamic post loading with React Query
-- Image and video support
-- Like, comment, and share functionality
-- Real-time content updates
-- Responsive design for all screen sizes
-
-### 2. Advanced Reels & Stories
-- Vertical video reels similar to TikTok
-- Interactive story viewing with swipe gestures
-- Video controls with play/pause functionality
-- Music integration and engagement metrics
-- 24-hour story expiration
-
-### 3. Real-time Chat System
-- Multi-user chat interface with AI-generated conversations
-- Real-time messaging with typing indicators
-- User status tracking (online/offline)
-- Message history and search functionality
-- Beautiful chat UI with gradients
-
-### 4. AI-Powered Assistant
-- Intelligent chatbot with context-aware responses
-- Quick action buttons for common queries
-- Advanced profile editing with image upload
-- User authentication and session management
-- Natural language processing capabilities
-
-### 5. Social Media Integration
-- Share posts to Twitter, Facebook, WhatsApp
-- Copy link functionality
-- External platform support
-- Beautiful share modal design
-
-## 🎨 Design Highlights
-
-### Beautiful UI/UX
-- **Gradient Backgrounds** - Purple to pink gradients throughout
-- **Glassmorphism Effects** - Modern backdrop blur design
-- **Smooth Animations** - Hover effects and transitions
-- **Responsive Design** - Mobile-first approach
-- **Accessibility** - Proper contrast and readable text
-
-### Modern Components
-- **Enhanced Navbar** - Glassmorphism with gradient logo
-- **Improved Feed** - Better shadows and hover effects
-- **Advanced Modals** - Beautiful share and comment modals
-- **Interactive Buttons** - Scale and color transitions
-
 ## 📊 Database Schema
 
 ### Core Tables
