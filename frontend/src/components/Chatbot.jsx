@@ -11,6 +11,7 @@ import {
   faCog
 } from "@fortawesome/free-solid-svg-icons";
 
+
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([

@@ -162,3 +162,51 @@ export const rejectRequest = (req, res) => {
     });
   });
 };
+
+export const getFollowers = (req, res) => {
+  const userId = req.params.userId;
+  
+  const q = `
+    SELECT u.id, u.name, u.username, u.profilePic, u.verified
+    FROM users u
+    INNER JOIN relationships r ON r.followerUserId = u.id
+    WHERE r.followedUserId = ?
+    ORDER BY r.createdAt DESC
+  `;
+
+  db.query(q, [userId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    
+    // Remove password from response
+    const followers = data.map(follower => {
+      const { password, ...followerInfo } = follower;
+      return followerInfo;
+    });
+    
+    return res.json(followers);
+  });
+};
+
+export const getFollowing = (req, res) => {
+  const userId = req.params.userId;
+  
+  const q = `
+    SELECT u.id, u.name, u.username, u.profilePic, u.verified
+    FROM users u
+    INNER JOIN relationships r ON r.followedUserId = u.id
+    WHERE r.followerUserId = ?
+    ORDER BY r.createdAt DESC
+  `;
+
+  db.query(q, [userId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    
+    // Remove password from response
+    const following = data.map(following => {
+      const { password, ...followingInfo } = following;
+      return followingInfo;
+    });
+    
+    return res.json(following);
+  });
+};

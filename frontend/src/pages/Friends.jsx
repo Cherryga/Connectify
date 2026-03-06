@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
+import {  useState } from "react";
+// import { AuthContext } from "../context/AuthContext";
 import { makeRequest } from "../axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -7,8 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faUserCheck, faUserTimes, faUserMinus } from "@fortawesome/free-solid-svg-icons";
 
 const Friends = () => {
-  // eslint-disable-next-line no-unused-vars
-  const { currentUser } = useContext(AuthContext);
+  // const { currentUser } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState("friends");
   const queryClient = useQueryClient();
 
@@ -17,6 +16,7 @@ const Friends = () => {
     queryKey: ['friends'],
     queryFn: () => makeRequest.get("/relationships/friends").then(res => res.data),
   });
+  
 
   // Get friend requests
   const { data: friendRequests, isPending: requestsLoading } = useQuery({

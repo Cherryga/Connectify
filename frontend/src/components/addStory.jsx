@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faImage, faVideo } from "@fortawesome/free-solid-svg-icons";
-import { makeRequest } from "../axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { makeRequest } from "../axios"; //API CALLS
+import { useMutation, useQueryClient } from "@tanstack/react-query"; //Data Management
 import PropTypes from 'prop-types';
 
 const AddStory = ({ setAddStory }) => {

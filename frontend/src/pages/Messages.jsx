@@ -18,6 +18,7 @@ const Messages = () => {
   const { data: conversations } = useQuery({
     queryKey: ['conversations'],
     queryFn: () => makeRequest.get("/messages/conversations").then((res) => res.data),
+    refetchInterval: 5000,
   });
 
   // Get messages for selected chat
@@ -25,6 +26,7 @@ const Messages = () => {
     queryKey: ['messages', selectedChat?.id],
     queryFn: () => makeRequest.get(`/messages/${selectedChat?.id}`).then((res) => res.data),
     enabled: !!selectedChat,
+    refetchInterval: selectedChat ? 3000 : false,
   });
 
   // Send message mutation
@@ -32,7 +34,7 @@ const Messages = () => {
     mutationFn: (messageText) => 
       makeRequest.post("/messages", {
         receiverId: selectedChat.id,
-        message: messageText,
+        text: messageText,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages', selectedChat?.id] });
@@ -140,8 +142,8 @@ const Messages = () => {
                       alt="Profile"
                       src={
                         conversation.profilePic
-                          ? `http://localhost:5173/uploads/posts/${conversation.profilePic}`
-                          : "http://localhost:5173/default/default_profile.png"
+                          ? `http://localhost:8800/uploads/posts/${conversation.profilePic}`
+                          : "http://localhost:8800/default/default_profile.png"
                       }
                       className="w-full h-full rounded-full object-cover"
                     />
@@ -191,8 +193,8 @@ const Messages = () => {
                         alt="Profile"
                         src={
                           selectedChat.profilePic
-                            ? `http://localhost:5173/uploads/posts/${selectedChat.profilePic}`
-                            : "http://localhost:5173/default/default_profile.png"
+                            ? `http://localhost:8800/uploads/posts/${selectedChat.profilePic}`
+                            : "http://localhost:8800/default/default_profile.png"
                         }
                         className="w-full h-full rounded-full object-cover"
                       />
@@ -235,7 +237,7 @@ const Messages = () => {
                         : "bg-gray-200 text-gray-900"
                     }`}
                   >
-                    <div className="text-sm">{message.message}</div>
+                    <div className="text-sm">{message.text || message.message}</div>
                     <div className={`text-xs mt-1 ${
                       message.senderId === currentUser?.id ? "text-blue-100" : "text-gray-500"
                     }`}>

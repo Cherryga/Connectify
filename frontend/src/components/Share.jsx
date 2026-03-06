@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "../axios";
 import { useContext, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faImage, faPaperPlane, faVideo, faSmile, faMapMarkerAlt, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faPaperPlane, faVideo, faSmile, faMapMarkerAlt, faTimes, faCamera } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../context/AuthContext";
 
 const Share = () => {
@@ -13,6 +13,7 @@ const Share = () => {
   const [showStoryModal, setShowStoryModal] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
 
   const upload = async () => {
     try {
@@ -36,6 +37,7 @@ const Share = () => {
       setFile(null);
       setDesc("");
       setError("");
+      setPreviewUrl("");
     },
     onError: (err) => {
       console.log("Post error:", err);
@@ -51,6 +53,7 @@ const Share = () => {
       setFile(null);
       setShowStoryModal(false);
       setError("");
+      setPreviewUrl("");
     },
     onError: (err) => {
       console.log("Story error:", err);
@@ -75,7 +78,7 @@ const Share = () => {
       }
       
       if (isStory) {
-        await storyMutation.mutateAsync({ img: imgUrl, caption: desc });
+        await storyMutation.mutateAsync({ img: imgUrl, desc: desc });
       } else {
         await postMutation.mutateAsync({ desc, img: imgUrl });
       }
@@ -91,9 +94,22 @@ const Share = () => {
     if (selectedFile) {
       setFile(selectedFile);
       setError("");
+      
+      // Create preview URL
+      const url = URL.createObjectURL(selectedFile);
+      setPreviewUrl(url);
+      
       if (isStory) {
         setShowStoryModal(true);
       }
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl("");
     }
   };
 
@@ -108,7 +124,7 @@ const Share = () => {
                 src={
                   currentUser?.profilePic 
                     ? `http://localhost:8800/uploads/posts/${currentUser.profilePic}` 
-                    : "http://localhost:8800/default/default_profile.png"
+                    : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop&crop=face"
                 } 
                 className="w-full h-full rounded-full object-cover"
               />
@@ -187,6 +203,21 @@ const Share = () => {
               />
             </label>
 
+            {/* Camera for Stories */}
+            {isStory && (
+              <label className="flex items-center space-x-2 cursor-pointer text-purple-500 hover:text-purple-600 transition-all duration-200 hover:scale-105">
+                <FontAwesomeIcon icon={faCamera} className="text-xl" />
+                <span className="text-sm font-medium">Camera</span>
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </label>
+            )}
+
             {/* Feeling */}
             <button className="flex items-center space-x-2 text-yellow-500 hover:text-yellow-600 transition-all duration-200 hover:scale-105">
               <FontAwesomeIcon icon={faSmile} className="text-xl" />
@@ -227,16 +258,16 @@ const Share = () => {
         </div>
 
         {/* Preview */}
-        {file && (
+        {previewUrl && (
           <div className="mt-6">
             <div className="relative inline-block">
               <img
-                src={URL.createObjectURL(file)}
+                src={previewUrl}
                 alt="Preview"
                 className="max-w-full h-64 object-cover rounded-xl shadow-lg"
               />
               <button
-                onClick={() => setFile(null)}
+                onClick={handleRemoveFile}
                 className="absolute top-3 right-3 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm hover:bg-red-600 transition-colors shadow-lg"
               >
                 <FontAwesomeIcon icon={faTimes} />
@@ -259,6 +290,17 @@ const Share = () => {
                 <FontAwesomeIcon icon={faTimes} className="text-gray-600" />
               </button>
             </div>
+            
+            {previewUrl && (
+              <div className="mb-4">
+                <img
+                  src={previewUrl}
+                  alt="Story Preview"
+                  className="w-full h-48 object-cover rounded-xl"
+                />
+              </div>
+            )}
+            
             <textarea
               placeholder="Add a caption to your story..."
               className="w-full h-24 p-4 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent mb-6"
