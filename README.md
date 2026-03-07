@@ -1,11 +1,30 @@
-﻿# 🌟 Connectify - Full-Stack Social Media Platform
+# 🌟 Connectify - Full-Stack Social Media Platform
 
 A modern, Instagram-inspired social media platform built with React.js, Node.js, and MySQL. Connectify features real-time interactions, AI-powered assistance, and a beautiful, responsive design.
+## Screenshots 
 
-![Connectify](https://img.shields.io/badge/Connectify-Social%20Media%20Platform-purple)
-![React](https://img.shields.io/badge/React-18.0.0-blue)
-![Node.js](https://img.shields.io/badge/Node.js-16.0.0-green)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-orange)
+**Dashboard**
+<img width="1887" height="989" alt="Screenshot 2025-08-06 204227" src="https://github.com/user-attachments/assets/2ad78a07-ea9e-4e03-9882-24a3ac199463" />
+
+<img width="1123" height="890" alt="Screenshot 2025-08-06 204251" src="https://github.com/user-attachments/assets/c2eab61b-5652-46a6-884b-d396cc65dd4e" />
+
+<img width="1123" height="623" alt="Screenshot 2025-08-06 204423" src="https://github.com/user-attachments/assets/77dff46d-e65c-4282-803e-f0071b89242d" />
+
+
+
+<p align="center">
+  AI Assistant<br>
+  <br>
+  <img width="528" height="715" alt="Screenshot 2025-08-06 204308" src="https://github.com/user-attachments/assets/7cffac73-1521-4a01-be87-e20568efbe1a" />
+  <br>
+  Chatbox<br>
+  <br>
+  <img width="522" height="792" alt="Screenshot 2025-08-06 204332" src="https://github.com/user-attachments/assets/d226de51-d1c6-43b8-bd63-b8f14d69d40d" />
+</p>
+
+
+
+
 
 ## ✨ Features
 
@@ -212,32 +231,6 @@ npm run build
 # Serve static files
 npm run preview
 ```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **React.js** - For the amazing frontend framework
-- **Node.js** - For the powerful backend runtime
-- **Tailwind CSS** - For the beautiful styling system
-- **MySQL** - For the reliable database system
-- **FontAwesome** - For the comprehensive icon library
-
-## 📞 Support
-
-If you have any questions or need help with the project, please feel free to reach out!
-
 ---
 
 **Connectify** - Connecting people through beautiful social experiences! 🌟
-
