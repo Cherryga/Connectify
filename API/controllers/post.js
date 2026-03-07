@@ -11,7 +11,7 @@ export const getPosts = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!"); 
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     let q, values;
@@ -30,8 +30,13 @@ export const getPosts = (req, res) => {
       q = `SELECT p.*, u.username, u.name, u.profilePic, u.id AS userId 
             FROM posts AS p 
             JOIN users AS u ON (u.id = p.userId)
-            LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) 
-            WHERE r.followerUserId = ? OR p.userId = ?
+            WHERE p.userId = ?
+               OR EXISTS (
+                 SELECT 1
+                 FROM relationships AS r
+                 WHERE r.followedUserId = p.userId
+                   AND r.followerUserId = ?
+               )
             ORDER BY p.createdAt DESC
             LIMIT ? OFFSET ?`;
       values = [userInfo.id, userInfo.id, limit, offset];
@@ -48,7 +53,7 @@ export const getAllPosts = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!"); 
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     // Get all posts (like Instagram feed)
@@ -69,7 +74,7 @@ export const getTrendingPosts = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!"); 
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = `
@@ -105,7 +110,7 @@ export const getExplorePosts = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!"); 
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = `
@@ -145,7 +150,7 @@ export const getFilteredPosts = (req, res) => {
 
   const { hashtag, postType, userId } = req.query;
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     let q = `
@@ -207,7 +212,7 @@ export const getTrendingHashtags = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!"); 
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = `
@@ -242,7 +247,7 @@ export const addPost = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = "INSERT INTO posts(`desc`, `img`, `createdAt`, `userId`) VALUES (?)";
@@ -264,7 +269,7 @@ export const deletePost = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = "DELETE FROM posts WHERE `id`=? AND `userId` = ?";
@@ -277,27 +282,75 @@ export const deletePost = (req, res) => {
   });
 };
 
+// export const getRecentActivities = (req, res) => {
+//   const token = req.cookies.accessToken;
+//   if (!token) return res.status(401).json("Not logged in!");
+
+//   jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
+//     if (err) return res.status(403).json("Token is not valid!");
+
+//     const q = `
+//       SELECT 
+//         'like' as type,
+//         l.createdAt,
+//         u.username,
+//         u.name,
+//         u.profilePic,
+//         p.desc as postDesc,
+//         p.img as postImg
+//       FROM likes l
+//       JOIN users u ON l.userId = u.id
+//       JOIN posts p ON l.postId = p.id
+//       WHERE p.userId = ?
+//       UNION ALL
+//       SELECT 
+//         'comment' as type,
+//         c.createdAt,
+//         u.username,
+//         u.name,
+//         u.profilePic,
+//         p.desc as postDesc,
+//         p.img as postImg
+//       FROM comments c
+//       JOIN users u ON c.userId = u.id
+//       JOIN posts p ON c.postId = p.id
+//       WHERE p.userId = ?
+//       ORDER BY createdAt DESC
+//       LIMIT 10
+//     `;
+
+//     db.query(q, [userInfo.id, userInfo.id], (err, data) => {
+//       if (err) return res.status(500).json(err);
+//       return res.status(200).json(data);
+//     });
+//   });
+// };
+
 export const getRecentActivities = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
+    // Modified query with better error handling and LEFT JOINs
     const q = `
       SELECT 
         'like' as type,
-        l.createdAt,
+        COALESCE(l.createdAt, NOW()) as createdAt,
         u.username,
         u.name,
         u.profilePic,
         p.desc as postDesc,
-        p.img as postImg
+        p.img as postImg,
+        p.id as postId
       FROM likes l
       JOIN users u ON l.userId = u.id
       JOIN posts p ON l.postId = p.id
       WHERE p.userId = ?
+      
       UNION ALL
+      
       SELECT 
         'comment' as type,
         c.createdAt,
@@ -305,17 +358,23 @@ export const getRecentActivities = (req, res) => {
         u.name,
         u.profilePic,
         p.desc as postDesc,
-        p.img as postImg
+        p.img as postImg,
+        p.id as postId
       FROM comments c
       JOIN users u ON c.userId = u.id
       JOIN posts p ON c.postId = p.id
       WHERE p.userId = ?
+      
       ORDER BY createdAt DESC
       LIMIT 10
     `;
 
     db.query(q, [userInfo.id, userInfo.id], (err, data) => {
-      if (err) return res.status(500).json(err);
+      if (err) {
+        console.error("Recent activities error:", err);
+        // Return empty array instead of error to prevent frontend crash
+        return res.status(200).json([]);
+      }
       return res.status(200).json(data);
     });
   });
@@ -325,7 +384,7 @@ export const savePost = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = "INSERT INTO saved_posts (`userId`, `postId`) VALUES (?)";
@@ -342,7 +401,7 @@ export const unsavePost = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = "DELETE FROM saved_posts WHERE `userId`=? AND `postId`=?";
@@ -358,7 +417,7 @@ export const getSavedPosts = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not logged in!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = `

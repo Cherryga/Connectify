@@ -1,6 +1,7 @@
 import express from "express";
 import cors from 'cors';
 import cookieParser from "cookie-parser";
+import "dotenv/config";
 import authRoutes from "./routes/auth.js";
 import commentRoutes from "./routes/comments.js";
 import likeRoutes from "./routes/likes.js";
@@ -12,6 +13,12 @@ import notificationRoutes from "./routes/notifications.js";
 import messageRoutes from "./routes/messages.js";
 import multer from "multer";
 const app = express();
+const PORT = Number(process.env.PORT || 8800);
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
+
+if (!process.env.JWT_SECRET) {
+  throw new Error("Missing JWT_SECRET in environment.");
+}
 
 // Middleware order matters, so place CORS before other middleware and route declarations (that shit is by chatgbt)
 
@@ -21,7 +28,8 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: CLIENT_URL,
+  credentials: true,
 }));
 
 app.use(express.json());
@@ -62,6 +70,6 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/messages", messageRoutes);
 
 
-app.listen(8800, () => {
-  console.log("MyDevify Social is working ...");
+app.listen(PORT, () => {
+  console.log(`MyDevify Social API is working on port ${PORT}`);
 });

@@ -3,6 +3,13 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { generateOTP, sendOTPEmail, storeOTP, verifyOTP } from "../services/emailService.js";
 
+const isProduction = process.env.NODE_ENV === "production";
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+};
+
 export const register = (req, res) => {
   //CHECK USER IF EXISTS
   const q = "SELECT * FROM users WHERE username = ?";
@@ -78,14 +85,12 @@ export const login = (req, res) => {
     if (!checkPassword)
       return res.status(400).json("Wrong password or username!");
 
-    const token = jwt.sign({ id: data[0].id }, "secretkey");
+    const token = jwt.sign({ id: data[0].id }, process.env.JWT_SECRET);
 
     const { password, ...others } = data[0];
 
     res
-      .cookie("accessToken", token, {
-        httpOnly: true,
-      })
+      .cookie("accessToken", token, cookieOptions)
       .status(200)
       .json(others);
   });
@@ -94,8 +99,8 @@ export const login = (req, res) => {
 export const logout = (req, res) => {
   //console.log("working")
   res.clearCookie("accessToken",{
-    secure:true,
-    sameSite:"none"
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax"
   }).status(200).json("User has been logged out.")
 };
 
@@ -156,13 +161,11 @@ export const verifyOTPLogin = (req, res) => {
       if (err) return res.status(500).json(err);
       if (data.length === 0) return res.status(404).json("User not found!");
 
-      const token = jwt.sign({ id: data[0].id }, "secretkey");
+      const token = jwt.sign({ id: data[0].id }, process.env.JWT_SECRET);
       const { password, ...others } = data[0];
 
       res
-        .cookie("accessToken", token, {
-          httpOnly: true,
-        })
+        .cookie("accessToken", token, cookieOptions)
         .status(200)
         .json(others);
     });

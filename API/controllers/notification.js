@@ -6,7 +6,7 @@ export const getNotifications = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not authenticated!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = `
@@ -39,7 +39,7 @@ export const markAsRead = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not authenticated!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = "UPDATE notifications SET `read` = 1 WHERE `id` = ? AND `toUserId` = ?";
@@ -55,7 +55,7 @@ export const createNotification = (req, res) => {
   const token = req.cookies.accessToken;
   if (!token) return res.status(401).json("Not authenticated!");
 
-  jwt.verify(token, "secretkey", (err, userInfo) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
     const q = "INSERT INTO notifications(`fromUserId`, `toUserId`, `type`, `postId`, `message`, `createdAt`) VALUES (?)";
